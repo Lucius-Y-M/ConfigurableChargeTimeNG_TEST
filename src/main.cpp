@@ -104,6 +104,9 @@ float get_cast_time_Impl([[maybe_unused]] float origin, [[maybe_unused]] RE::Act
 	if (x < 0.0f)
 		return origin;
 
+	if (x >= 1.0f)
+		return 0.0f;
+
 	return origin / (37.8255f * x * x * x * x * x - 74.8895f * x * x * x * x + 43.3082f * x * x * x - 7.65238f * x * x + 4.82019f * x - 0.411975f);
 }
 
