@@ -45,6 +45,8 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 	return true;
 }
 
+#define STB
+
 struct Settings
 {
 private:
@@ -63,10 +65,9 @@ public:
 			}
 		} catch (const toml::parse_error& e) {
 			std::ostringstream ss;
-			ss
-				<< "Error parsing file \'" << *e.source().path << "\':\n"
-				<< '\t' << e.description() << '\n'
-				<< "\t\t(" << e.source().begin << ')';
+			ss << "Error parsing file \'" << *e.source().path << "\':\n"
+			   << '\t' << e.description() << '\n'
+			   << "\t\t(" << e.source().begin << ')';
 			logger::error(ss.str());
 			throw std::runtime_error("failed to load settings"s);
 		}
@@ -75,18 +76,22 @@ public:
 	static inline bSetting EnableNPC{ "General"s, "EnableNPC"s, false };
 	static inline bSetting EnablePlayer{ "General"s, "EnablePlayer"s, true };
 
-	//static inline iSetting Formid{ "General"s, "FormID"s, 0x800 };
-	//static inline sSetting EspName{ "General"s, "Esp"s, "ConfigurableCastTime.esp" };
+#ifdef STB
+	static inline iSetting Formid{ "General"s, "FormID"s, 0x800 };
+	static inline sSetting EspName{ "General"s, "Esp"s, "ConfigurableCastTime.esp" };
+#endif
 };
 
-//struct DataHandler
-//{
-//	static inline RE::TESGlobal* var = nullptr;
-//
-//	static void init() {
-//		var = RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(static_cast<uint32_t>(*Settings::Formid), *Settings::EspName);
-//	}
-//};
+#ifdef STB
+struct DataHandler
+{
+	static inline RE::TESGlobal* var = nullptr;
+
+	static void init() {
+		var = RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(static_cast<uint32_t>(*Settings::Formid), *Settings::EspName);
+	}
+};
+#endif  // STB
 
 float get_skill_pers(RE::Actor* a, RE::SpellItem* spel) {
 	const float MAX_SKILL = 100.0f;
@@ -96,10 +101,11 @@ float get_skill_pers(RE::Actor* a, RE::SpellItem* spel) {
 
 float get_cast_time_Impl([[maybe_unused]] float origin, [[maybe_unused]] RE::Actor* caster, [[maybe_unused]] RE::SpellItem* spel)
 {
-	//return origin * DataHandler::var->value;
-	
+#ifdef STB
+	return origin * DataHandler::var->value;
+#else
 	//37.8255 x^(5)-74.8895 x^(4)+43.3082 x^(3)-7.65238 x^(2)+4.82019 x-0.411975
-	
+
 	float x = get_skill_pers(caster, spel);
 	if (x < 0.0f)
 		return origin;
@@ -107,7 +113,9 @@ float get_cast_time_Impl([[maybe_unused]] float origin, [[maybe_unused]] RE::Act
 	if (x >= 1.0f)
 		return 0.0f;
 
-	return origin / (37.8255f * x * x * x * x * x - 74.8895f * x * x * x * x + 43.3082f * x * x * x - 7.65238f * x * x + 4.82019f * x - 0.411975f);
+	return origin / (37.8255f * x * x * x * x * x - 74.8895f * x * x * x * x + 43.3082f * x * x * x - 7.65238f * x * x +
+						4.82019f * x - 0.411975f);
+#endif  // 0
 }
 
 bool is_playable_spel(RE::SpellItem* spel) {
@@ -134,144 +142,43 @@ float get_cast_time(float origin, RE::Actor* a, RE::SpellItem* spel)
 	}
 }
 
-float get_cast_time_caster(float origin, RE::MagicCaster* _a, RE::SpellItem* spel)
+class CastSpeedHook
 {
-	auto a = _a->GetCasterAsActor();
-	if (!a)
-		return origin;
-	
-	return get_cast_time(origin, a, spel);
-}
+public:
+	static void Hook() { _Update = REL::Relocation<uintptr_t>(RE::VTABLE_ActorMagicCaster[0]).write_vfunc(0x1d, Update); }
+	//static void Hook() { _Update = SKSE::GetTrampoline().write_branch<5>(REL::ID(33362).address() + 0x49e, Update); }
 
-float get_cast_time_addone(float origin, RE::Character* a, RE::SpellItem* spel) { return get_cast_time(origin, a, spel) + 1.0f; }
-
-float get_cast_time_spell_caster(RE::SpellItem* spel, RE::MagicCaster* _a)
-{
-	return get_cast_time_caster(spel->GetChargeTime(), _a, spel);
-}
-
-template <bool eq>
-bool MagicItem__is_continious_common(RE::SpellItem* spel, RE::MagicCaster* caster)
-{
-	if (!spel)
-		return false;
-
-	using namespace RE::MagicSystem;
-	auto type = spel->GetSpellType();
-	if (type != SpellType::kSpell && type != SpellType::kLesserPower && type != SpellType::kPoison &&
-		(type != SpellType::kEnchantment && type != SpellType::kStaffEnchantment ||
-			spel->GetCastingType() == CastingType::kConstantEffect || caster->GetCastingSource() == CastingSource::kInstant))
-		return false;
-
-	float charge_time = get_cast_time_spell_caster(spel, caster);
-	if (eq) {
-		if (charge_time == 0.0)
-			return false;
-	} else {
-		if (charge_time != 0.0)
-			return false;
-	}
-
-	return spel->GetCastingType() == CastingType::kFireAndForget;
-}
-
-bool MagicItem__is_continious_v1(RE::SpellItem* spel, RE::MagicCaster* caster)
-{
-	return MagicItem__is_continious_common<false>(spel, caster);
-}
-
-bool MagicItem__is_continious_v2(RE::SpellItem* spel, RE::MagicCaster* caster)
-{
-	return MagicItem__is_continious_common<true>(spel, caster);
-}
-
-void apply_hooks()
-{
-	using FenixUtils::add_trampoline;
-
-	{
-		// SkyrimSE.exe+54291A
-		FenixUtils::writebytes<33364, 0x16a>("\x48\x89\xDA\x0F\x1F\x00"sv);  // rbx
-		SKSE::GetTrampoline().write_call<5>(REL::ID(33364).address() + 0x173, uintptr_t(MagicItem__is_continious_v1));
-
-		// SkyrimSE.exe+5425AF
-		FenixUtils::writebytes<33363, 0x13f>("\x48\x89\xFA\x0F\x1F\x00"sv);  // rdi
-		SKSE::GetTrampoline().write_call<5>(REL::ID(33363).address() + 0x148, uintptr_t(MagicItem__is_continious_v1));
-
-		// SkyrimSE.exe+541DA5
-		FenixUtils::writebytes<33359, 0x15>("\x48\x89\xCA\x0F\x1F\x00"sv);  // rcx
-		SKSE::GetTrampoline().write_call<5>(REL::ID(33359).address() + 0x1e, uintptr_t(MagicItem__is_continious_v2));
-
-		// SkyrimSE.exe+542198
-		FenixUtils::writebytes<33362, 0x1d8>("\x48\x89\xDA\x0F\x1F\x00"sv);  // rcx
-		SKSE::GetTrampoline().write_call<5>(REL::ID(33362).address() + 0x1e1, uintptr_t(MagicItem__is_continious_v2));
-	}
-
-	{  // ActorMagicCaster::Update
-		struct Code : Xbyak::CodeGenerator
-		{
-			Code(uintptr_t func_addr, uintptr_t ret_addr)
-			{
-				// rcx == SpellItem*
-				// rbx == MagicCaster*
-				mov(rdx, rbx);
-				mov(rax, func_addr);
-				call(rax);
-
-				mov(rdx, ret_addr);
-				jmp(rdx);
+private:
+	static void Update(RE::MagicCaster* mcaster, float dtime) {
+		using S = RE::MagicCaster::State;
+		auto state = mcaster->state.underlying();
+		if (state == static_cast<uint32_t>(S::kUnk01) || state == static_cast<uint32_t>(S::kUnk02)) {
+			if (auto a = mcaster->GetCasterAsActor();
+				a && a->IsPlayerRef() && mcaster->currentSpell && mcaster->currentSpell->As<RE::SpellItem>()) {
+				auto spel = mcaster->currentSpell->As<RE::SpellItem>();
+				float time_origin = mcaster->currentSpell->GetChargeTime();
+				float time_new = get_cast_time(time_origin, a, spel);
+				float k = time_new > 0.00001f ? time_origin / time_new : 1000000.0f;
+				return _Update(mcaster, dtime * k);
 			}
-		} xbyakCode{ uintptr_t(get_cast_time_spell_caster), REL::ID(33362).address() + 0x21c };  // SkyrimSE.exe+5421DC
-		add_trampoline<5, 33362, 0x216>(&xbyakCode);                                             // SkyrimSE.exe+5421D6
+		}
+		return _Update(mcaster, dtime);
 	}
 
-	{  // PlayerCharacter::sub_1407BEED0
-		struct Code : Xbyak::CodeGenerator
-		{
-			Code(uintptr_t func_addr, uintptr_t ret_addr)
-			{
-				// rdi == Character*
-				// rbx == SpellItem*
-				mov(r8, rbx);
-				mov(rdx, rdi);
-				mov(rax, func_addr);
-				call(rax);
-
-				mov(rdx, ret_addr);
-				jmp(rdx);
-			}
-		} xbyakCode{ uintptr_t(get_cast_time_addone), REL::ID(46070).address() + 0x13d };  // SkyrimSE.exe+7BF00D
-		add_trampoline<5, 46070, 0x135>(&xbyakCode);                                       // SkyrimSE.exe+7BF005
-	}
-
-	{  // MagicCaster::SetCastingTimerForCharge
-		struct Code : Xbyak::CodeGenerator
-		{
-			Code(uintptr_t func_addr, uintptr_t ret_addr)
-			{
-				// rcx == SpellItem*
-				// rbx == MagicCaster*
-				mov(rdx, rbx);
-				mov(rax, func_addr);
-				call(rax);
-
-				mov(rdx, ret_addr);
-				jmp(rdx);
-			}
-		} xbyakCode{ uintptr_t(get_cast_time_spell_caster), REL::ID(33651).address() + 0x1b };  // SkyrimSE.exe+54F22B
-		add_trampoline<5, 33651, 0x15>(&xbyakCode);                                             // SkyrimSE.exe+54F225
-	}
-
-	// ignored 140892130 (314 or 314/s, comparing with 0)
-}
+	static inline REL::Relocation<decltype(Update)> _Update;
+};
 
 static void SKSEMessageHandler(SKSE::MessagingInterface::Message* message)
 {
 	switch (message->type) {
 	case SKSE::MessagingInterface::kDataLoaded:
 		Settings::load();
-		//DataHandler::init();
-		apply_hooks();
+#ifdef STB
+		DataHandler::init();
+#endif  // STB
+
+		CastSpeedHook::Hook();
+		//apply_hooks();
 
 		break;
 	}
