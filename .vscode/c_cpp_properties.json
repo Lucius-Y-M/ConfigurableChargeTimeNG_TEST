@@ -4,8 +4,12 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:\\Users\\Cornelius Mennus\\source\\repos\\CommonLibSSE-NG\\include",
-                "C:/Users/Cornelius Mennus/source/repos/CommonLibSSE-NG/include"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/inclu",                
+                "${workspaceFolder}/build/release/vcpkg_installed/x64-windows-static/include",
+                "${workspaceFolder}/build/release/vcpkg_installed/x64-windows-static/include/SKSE",
+                "${workspaceFolder}/build/release/vcpkg_installed/x64-windows-static/include/RE",
+                "${workspaceFolder}/build/release/vcpkg_installed/x64-windows-static/include/REL"
             ],
             "defines": [
                 "_DEBUG",
@@ -13,10 +17,11 @@
                 "_UNICODE"
             ],
             "windowsSdkVersion": "10.0.22621.0",
-            "compilerPath": "cl.exe",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "windows-msvc-x64"
+            "compilerPath": "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.37.32822/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c23",
+            "cppStandard": "c++23",
+            "intelliSenseMode": "${default}",
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4

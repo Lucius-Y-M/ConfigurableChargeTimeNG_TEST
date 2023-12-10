@@ -1,19 +1,13 @@
 # It's recommended to set a minimum CMake version.
 # If you use CMake features from higher versions, update this to match.
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.21)
 
 # Set your project name. This will be the name of your SKSE .dll file.
 project(
     
     ConfigurableMagicCastingSKSE
-
     VERSION 0.0.1
-
-    # DESCRIPTION "SKSE Plugin to help customize difficulty settings"
-    # DESCRIPTION "SKSE Plugin to auto-spawn more enemies"
     DESCRIPTION "Configurable Magic Casting SKSE - DiffCastTime NG"
-
-
     LANGUAGES CXX
 )
 
@@ -24,12 +18,18 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 
 set(headers
 
-
+    src/inclu/consts.h
+    src/inclu/settings.h
+    src/inclu/ini.h
+    src/inclu/hook.h
+    src/inclu/failcheck.h
+    src/inclu/distribute.h
 )
 
 
 
 set(sources
+
 
     src/plugin.cpp
 
@@ -66,13 +66,8 @@ endif()
 # Setup your SKSE plugin as an SKSE plugin!
 find_package(CommonLibSSE CONFIG REQUIRED)
 
-# find_package(inipp)
 
-# target_link_libraries(
-#     ${PROJECT_NAME}
-#     PRIVATE
-#         inipp::mcmtroffaes_inipp
-# )
+
 
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${headers} ${sources}) # <--- specifies plugin.cpp
 # target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23) # <--- use C++23 standard

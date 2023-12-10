@@ -5,7 +5,6 @@
     "description": "SKSE Plugin to configure magic casting",
     
     "dependencies": [
-        "commonlibsse-ng",
-        "inipp"
+        "commonlibsse-ng"
     ]
 }
