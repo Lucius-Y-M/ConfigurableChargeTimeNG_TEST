@@ -1,9 +1,41 @@
 # It's recommended to set a minimum CMake version.
 # If you use CMake features from higher versions, update this to match.
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.27)
 
 # Set your project name. This will be the name of your SKSE .dll file.
-project(HelloWorld VERSION 0.0.1 LANGUAGES CXX)
+project(
+    
+    ConfigurableMagicCastingSKSE
+
+    VERSION 0.0.1
+
+    # DESCRIPTION "SKSE Plugin to help customize difficulty settings"
+    # DESCRIPTION "SKSE Plugin to auto-spawn more enemies"
+    DESCRIPTION "Configurable Magic Casting SKSE - DiffCastTime NG"
+
+
+    LANGUAGES CXX
+)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+
+
+set(headers
+
+
+)
+
+
+
+set(sources
+
+    src/plugin.cpp
+
+)
+
+
 
 # #
 # YOU DO NOT NEED TO EDIT ANYTHING BELOW HERE
@@ -30,11 +62,22 @@ endif()
 # Otherwise, you can set OUTPUT_FOLDER to any place you'd like :)
 # set(OUTPUT_FOLDER "C:/path/to/any/folder")
 
+
 # Setup your SKSE plugin as an SKSE plugin!
 find_package(CommonLibSSE CONFIG REQUIRED)
-add_commonlibsse_plugin(${PROJECT_NAME} SOURCES plugin.cpp) # <--- specifies plugin.cpp
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23) # <--- use C++23 standard
-target_precompile_headers(${PROJECT_NAME} PRIVATE PCH.h) # <--- PCH.h is required!
+
+# find_package(inipp)
+
+# target_link_libraries(
+#     ${PROJECT_NAME}
+#     PRIVATE
+#         inipp::mcmtroffaes_inipp
+# )
+
+add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${headers} ${sources}) # <--- specifies plugin.cpp
+# target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23) # <--- use C++23 standard
+target_precompile_headers(${PROJECT_NAME} PRIVATE src/PCH.h) # <--- PCH.h is required!
+
 
 # When your SKSE .dll is compiled, this will automatically copy the .dll into your mods folder.
 # Only works if you configure DEPLOY_ROOT above (or set the SKYRIM_MODS_FOLDER environment variable)

@@ -1,8 +1,11 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
-    "name": "hello-world",
-    "version-string": "0.0.1",
+    "name": "configmagiccasting",
+    "version-string": "1.0.0",
+    "description": "SKSE Plugin to configure magic casting",
+    
     "dependencies": [
-        "commonlibsse-ng"
+        "commonlibsse-ng",
+        "inipp"
     ]
 }
