@@ -30,7 +30,7 @@ set(headers
 
 set(sources
 
-
+    src/consts.cpp
     src/plugin.cpp
 
 )

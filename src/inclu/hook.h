@@ -31,21 +31,60 @@ class CastSpeedHook {
                 )
             ) {
 
-                //// FAILS: then interrupt
-                //// !!!!!!! ================== MUST TEST FIRST!
-                if (Conditions::isCastFail(actor, spell)) {
 
-                    // actor->InterruptCast(false);
+                //// if spell NOT perked, AND do NOT change, then dont
+                
 
-                    // return _Update(caster, time);
+                
+                auto castRes = Conditions::isCastFail(actor, spell);
+                switch (castRes) {
+
+                    //// FAILS: then interrupt
+                    //// !!!!!!! ================== MUST TEST FIRST!
+                    case Conditions::CastFailStatus::kFail : {
+
+                        actor->InterruptCast(false); // do NOT restore magicka
+
+                        return _Update(caster, time); //// still needed?
+                        break;
+                    }
+
+                    case Conditions::CastFailStatus::kFailBackfire : {
+
+                        actor->InterruptCast(false); // do NOT restore magicka
+                        
+                        if (auto * castInst = actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+                            castInst
+                        ) {
+
+                            float magnitudeOverride = 1.f;
+
+                            castInst->CastSpellImmediate(Consts::SPEL_BACKFIRE, false, actor->AsReference(), 1.f, false, magnitudeOverride, nullptr);
+                        }
+
+                        return _Update(caster, time); //// still needed?
+                        break;
+                    }
+                    //// !!!!!!! ================== MUST TEST FIRST!
+
+
+
+
+                    /* curr: ONLY success, so allow it to go ahead. */
+                    default : {
+
+                        break;
+                    }
+
                 }
-                //// !!!!!!! ================== MUST TEST FIRST!
+
 
 
                 auto state = caster->state.underlying();
                                 
                 if (state == static_cast<u32>(MaCa::State::kUnk01) /* start */
                     || state == static_cast<u32>(MaCa::State::kUnk02) /* charge */
+                    || state == static_cast<u32>(MaCa::State::kCasting) /* casting */
                 ) {
                     
                     float tOrig = spell->GetChargeTime();

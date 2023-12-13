@@ -38,19 +38,17 @@ void OnDataLoadedHandler(SKSEMI::Message * msg) {
 
         Consts::SOND_CASTFAIL = sond_castfail;
         Consts::SPEL_BACKFIRE = spel_backfire;
-
-
-        //// ===================== HOOK
-        logger::info("== RE::ActorMagicCaster::Update Hook == installing...");
-        CastSpeedHook::Hook();
-        logger::info("== RE::ActorMagicCaster::Update Hook == installed.");
-
-
+        
         //// ===================== TOME-TAUGHT SPELLS: Keyword distrib
         logger::info("== Tome-taught spells: starting keyword distribution, if required...");
         Distributor::distributeKeywordsToTomes();
         logger::info("== Tome-taught spells: keyword distribution complete, if executed.");
         
+
+        //// ===================== HOOK
+        logger::info("== RE::ActorMagicCaster::Update Hook == installing...");
+        CastSpeedHook::Hook();
+        logger::info("== RE::ActorMagicCaster::Update Hook == installed.");
 
         logger::info("=========== INIT FINISHED. ===========");
 
@@ -63,6 +61,6 @@ SKSEPluginLoad(const SKSE::LoadInterface *skse) {
     // Once all plugins and mods are loaded, then the ~ console is ready and can
     // be printed to
     SKSE::GetMessagingInterface()->RegisterListener(OnDataLoadedHandler);
-
+    
     return true;
 }

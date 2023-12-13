@@ -14,11 +14,11 @@ namespace Settings {
         bool bAppliesTo_NPC = false;
 
 
-        uint32_t uMaxCastSpeedMinLevel_Novice;
-        uint32_t uMaxCastSpeedMinLevel_Apprentice;
-        uint32_t uMaxCastSpeedMinLevel_Adept;
-        uint32_t uMaxCastSpeedMinLevel_Expert;
-        uint32_t uMaxCastSpeedMinLevel_Master;
+        u32 uMaxCastSpeedMinLevel_Novice;
+        u32 uMaxCastSpeedMinLevel_Apprentice;
+        u32 uMaxCastSpeedMinLevel_Adept;
+        u32 uMaxCastSpeedMinLevel_Expert;
+        u32 uMaxCastSpeedMinLevel_Master;
     };
 
 
@@ -28,11 +28,11 @@ namespace Settings {
         bool bCastCanFail_Player = false;
         bool bCastCanFail_NPC = false;
 
-        uint32_t uNoFailMinLevel_Novice;
-        uint32_t uNoFailMinLevel_Apprentice;
-        uint32_t uNoFailMinLevel_Adept;
-        uint32_t uNoFailMinLevel_Expert;
-        uint32_t uNoFailMinLevel_Master;
+        u32 uNoFailMinLevel_Novice;
+        u32 uNoFailMinLevel_Apprentice;
+        u32 uNoFailMinLevel_Adept;
+        u32 uNoFailMinLevel_Expert;
+        u32 uNoFailMinLevel_Master;
 
 
         /// BACKFIRE:

@@ -1,45 +1,45 @@
 #pragma once
 
-#include <PCH.h>
+#include "../PCH.h"
 
 
-const char * FILE_NAME = "CMC_Settings.ini";
+// const char * FILE_NAME = "CMC_Settings.ini";
 
-namespace Parser {
-    static bool readINIFile() {
-
-
-        inipp::Ini<char> ini;
-        try
-        {
-            std::ifstream is(FILE_NAME);
-            ini.parse(is);
-        }
-
-        //// parsing failure
-        catch(const std::exception& e)
-        {
-            return false;
-        }
+// namespace Parser {
+//     static bool readINIFile() {
 
 
-        // ini.strip_trailing_comments();
+//         inipp::Ini<char> ini;
+//         try
+//         {
+//             std::ifstream is(FILE_NAME);
+//             ini.parse(is);
+//         }
+
+//         //// parsing failure
+//         catch(const std::exception& e)
+//         {
+//             return false;
+//         }
+
+
+//         // ini.strip_trailing_comments();
         
         
-        //// get all curr items
-        try
-        {
+//         //// get all curr items
+//         try
+//         {
         
-            // inipp::get_value(ini.sections["Items"], "");
+//             // inipp::get_value(ini.sections["Items"], "");
 
-        }
-        catch(const std::exception& e)
-        {
-            return false;
-        }
+//         }
+//         catch(const std::exception& e)
+//         {
+//             return false;
+//         }
         
-        return true;
-    }
+//         return true;
+//     }
 
-}
+// }
 

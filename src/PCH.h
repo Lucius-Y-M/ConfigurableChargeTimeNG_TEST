@@ -11,17 +11,30 @@
 
 
 #include <unordered_set>
+#include <vector>
 
 // ==== Alias
 
+using u32 = uint32_t;
+using u8 = uint8_t;
 
 template<typename T>
-using Vec = std::vector<T>;
-template<class T>
+using Some = std::optional<T>;
+using None = std::nullopt_t;
+
+
+
+template<typename T>
+using HashSet = std::unordered_set<T>;
+template<typename T>
 using Set = std::set<T>;
+template<typename T>
+using Vec = std::vector<T>;
+template<typename T, typename U>
+using HashMap = std::unordered_map<T, U>;
 
 
-using u32 = uint32_t;
+
 
 using Keyword = RE::BGSKeyword;
 using Sound = RE::TESSound;
@@ -36,6 +49,9 @@ using BSTES = RE::BSTEventSource<T>;
 using BSNEC = RE::BSEventNotifyControl;
 using SKSEMI = SKSE::MessagingInterface;
 using FID = RE::FormID;
+
+using ST = RE::MagicSystem::SpellType;
+using AV = RE::ActorValue;
 
 namespace logger = SKSE::log;
 using namespace std::literals;
