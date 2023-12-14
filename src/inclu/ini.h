@@ -1,9 +1,10 @@
 #pragma once
 
 #include "../PCH.h"
-#include "../../inipp/inipp/inipp.h"
 
-const char * FILE_NAME = "CMC_Settings.ini";
+#define CMC_NG_SKSE_INI "CMC_Settings.ini"
+
+
 
 namespace Parser {
 
@@ -15,7 +16,7 @@ namespace Parser {
         inipp::Ini<char> ini;
         try
         {
-            std::ifstream is(FILE_NAME);
+            std::ifstream is(CMC_NG_SKSE_INI);
             ini.parse(is);
         }
 
@@ -46,9 +47,9 @@ namespace Parser {
 
 
             //// CUSTOMFORMULA:
-            bool customFormula = false;
-            inipp::get_value(ini.sections["CastingSpeedFormulaSetting"], "bCustomFormula", customFormula);
-            if (customFormula) {
+            bool bCustomFormula = false;
+            inipp::get_value(ini.sections["CastingSpeedFormulaSetting"], "bCustomFormula", bCustomFormula);
+            if (bCustomFormula) {
                 std::string input;
                 inipp::get_value(ini.sections["CastingSpeedFormulaSetting"], "l_idTermsOfXAndCoefficients", input);
                 inipp::get_value(ini.sections["CastingSpeedFormulaSetting"], "dCoefficientL", Settings::SETTINGS.sSpeed.dCoefficientL);
@@ -57,7 +58,10 @@ namespace Parser {
                 
                 if (parseInput_opt.has_value()) {
                     Settings::SETTINGS.sSpeed.l_idTermsOfXAndCoefficients = parseInput_opt.value();
-                    Settings::SETTINGS.sSpeed.SPEED_BASE_VALUES = Settings::generateSpeedValsVector( std::views::iota(0, (int) Settings::SETTINGS.uMaxSkillLevel) );
+                    Settings::SETTINGS.sSpeed.SPEED_BASE_VALUES = Settings::generateSpeedValsVector(
+                        Settings::SETTINGS.sSpeed.l_idTermsOfXAndCoefficients,
+                        std::views::iota(0, (int) Settings::SETTINGS.uMaxSkillLevel)
+                    );
                 }
             }
 
@@ -107,5 +111,4 @@ namespace Parser {
         return {true, "All values parsed successfully"};
     }
 
-}
-
+};

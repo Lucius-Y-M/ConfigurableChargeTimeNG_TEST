@@ -11,16 +11,13 @@ class Distributor {
             if (!Settings::SETTINGS.bOnlySpellsWithTomes) {
                 return;
             }
-            
-            bool ignoreNoPerkSpells = Settings::SETTINGS.bExcludeNoPerkSpells;
 
             for (auto * book : RE::TESDataHandler::GetSingleton()->GetFormArray<RE::TESObjectBOOK>()) {
                 
                 auto * spell = book->GetSpell();
                 if (!spell) { return; }
-                if (!ignoreNoPerkSpells
-                    && (!spell->data.castingPerk
-                    || spell->data.castingPerk->formID == 0x0)
+                if (!spell->data.castingPerk
+                    || spell->data.castingPerk->formID == 0x0
                 ) {
                     logger::info(" -- curr spell EDID {} is excluded.", spell->GetFormEditorID());
                 }

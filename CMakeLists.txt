@@ -46,18 +46,31 @@ set(sources
 #
 # To do this automatically, set the `SKYRIM_FOLDER` environment variable
 # to the path of your Skyrim Special Edition folder
-if(DEFINED ENV{SKYRIM_FOLDER} AND IS_DIRECTORY "$ENV{SKYRIM_FOLDER}/Data")
-    set(OUTPUT_FOLDER "$ENV{SKYRIM_FOLDER}/Data")
-endif()
+
+
+########## ============================ 禁用
+
+# if(DEFINED ENV{SKYRIM_FOLDER} AND IS_DIRECTORY "$ENV{SKYRIM_FOLDER}/Data")
+#     set(OUTPUT_FOLDER "$ENV{SKYRIM_FOLDER}/Data")
+# endif()
+
+########## ============================ 禁用
+
 
 # If you're using Mod Organizer 2 or Vortex, you might want this to go inside
 # of your "mods" folder, inside of a subfolder named "<your mod>".
 #
 # To do this automatically, set the `SKYRIM_MODS_FOLDER` environment variable
 # to the path of your "mods" folder
-if(DEFINED ENV{SKYRIM_MODS_FOLDER} AND IS_DIRECTORY "$ENV{SKYRIM_MODS_FOLDER}")
-    set(OUTPUT_FOLDER "$ENV{SKYRIM_MODS_FOLDER}/${PROJECT_NAME}")
-endif()
+
+
+
+##### 更動 C:\Users\Cornelius Mennus\Desktop\BUILDHERE\SKSE DLL Output
+
+
+# if(DEFINED ENV{SKYRIM_MODS_FOLDER} AND IS_DIRECTORY "$ENV{SKYRIM_MODS_FOLDER}")
+    set(OUTPUT_FOLDER "C:/Users/Cornelius Mennus/Desktop/BUILDHERE/SKSE DLL Output")
+# endif()
 
 # Otherwise, you can set OUTPUT_FOLDER to any place you'd like :)
 # set(OUTPUT_FOLDER "C:/path/to/any/folder")

@@ -8,6 +8,9 @@
 #include <unordered_set>
 #include <vector>
 
+#include "../inipp/inipp/inipp.h"
+
+// === MORE includes at bottom
 
 
 
@@ -18,7 +21,7 @@ using u8 = uint8_t;
 
 template<typename T>
 using Some = std::optional<T>;
-using None = std::nullopt_t;
+const auto None = std::nullopt;
 
 
 
@@ -32,9 +35,8 @@ template<typename T, typename U>
 using HashMap = std::unordered_map<T, U>;
 template<typename T, typename U, typename H>
 using HashMapHash = std::unordered_map<T, U, H>;
-
-
-
+template <typename T, typename U>
+using tup = std::tuple<T, U>;
 
 
 using Keyword = RE::BGSKeyword;
@@ -54,8 +56,7 @@ using FID = RE::FormID;
 using ST = RE::MagicSystem::SpellType;
 using AV = RE::ActorValue;
 
-template <typename T, typename U>
-using tup = std::tuple<T, U>;
+
 
 namespace logger = SKSE::log;
 using namespace std::literals;
@@ -66,7 +67,7 @@ using namespace std::literals;
 
 #include "inclu/settings.h"
 #include "inclu/consts.h"
-#include "inclu/hook.h"
 #include "inclu/failcheck.h"
+#include "inclu/hook.h"
 #include "inclu/distribute.h"
 #include "inclu/ini.h"

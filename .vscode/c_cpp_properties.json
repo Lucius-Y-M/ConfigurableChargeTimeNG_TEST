@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/src",
-                "${workspaceFolder}/src/inclu",                
+                "${workspaceFolder}/src/inclu",
                 "${workspaceFolder}/build/release/vcpkg_installed/x64-windows-static/include",
                 "${workspaceFolder}/build/release/vcpkg_installed/x64-windows-static/include/SKSE",
                 "${workspaceFolder}/build/release/vcpkg_installed/x64-windows-static/include/RE",

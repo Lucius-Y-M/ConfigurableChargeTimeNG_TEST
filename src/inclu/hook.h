@@ -26,14 +26,10 @@ class CastSpeedHook {
                 && spell->HasKeyword(Consts::KYWD_ITEM_APPLIED_SPELL)
                 &&
                 (
-                    (actor->IsPlayerRef() && Settings::SETTINGS.sSpeed.bAppliesTo_Player)
-                    || (Settings::SETTINGS.sSpeed.bAppliesTo_NPC && !actor->HasKeyword(Consts::KYWD_NPC_EXCLUDED))
+                    (actor->IsPlayerRef() & Settings::SETTINGS.sSpeed.bAppliesTo_Player)
+                    | (Settings::SETTINGS.sSpeed.bAppliesTo_NPC & !actor->HasKeyword(Consts::KYWD_NPC_EXCLUDED))
                 )
             ) {
-
-
-                //// if spell NOT perked, AND do NOT change, then dont
-                
 
                 
                 auto castRes = Conditions::isCastFail(actor, spell);
@@ -41,30 +37,30 @@ class CastSpeedHook {
 
                     //// FAILS: then interrupt
                     //// !!!!!!! ================== MUST TEST FIRST!
-                    case Conditions::CastFailStatus::kFail : {
+                    // case Conditions::CastFailStatus::kFail : {
 
-                        actor->InterruptCast(false); // do NOT restore magicka
+                    //     actor->InterruptCast(false); // do NOT restore magicka
 
-                        return _Update(caster, time); //// still needed?
-                        break;
-                    }
+                    //     return _Update(caster, time); //// still needed?
+                    //     break;
+                    // }
 
-                    case Conditions::CastFailStatus::kFailBackfire : {
+                    // case Conditions::CastFailStatus::kFailBackfire : {
 
-                        actor->InterruptCast(false); // do NOT restore magicka
+                    //     actor->InterruptCast(false); // do NOT restore magicka
                         
-                        if (auto * castInst = actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
-                            castInst
-                        ) {
+                    //     if (auto * castInst = actor->GetMagicCaster(RE::MagicSystem::CastingSource::kInstant);
+                    //         castInst
+                    //     ) {
 
-                            float magnitudeOverride = 1.f;
+                    //         float magnitudeOverride = 1.f;
 
-                            castInst->CastSpellImmediate(Consts::SPEL_BACKFIRE, false, actor->AsReference(), 1.f, false, magnitudeOverride, nullptr);
-                        }
+                    //         castInst->CastSpellImmediate(Consts::SPEL_BACKFIRE, false, actor->AsReference(), 1.f, false, magnitudeOverride, nullptr);
+                    //     }
 
-                        return _Update(caster, time); //// still needed?
-                        break;
-                    }
+                    //     return _Update(caster, time); //// still needed?
+                    //     break;
+                    // }
                     //// !!!!!!! ================== MUST TEST FIRST!
 
 
@@ -112,10 +108,43 @@ class CastSpeedHook {
 
 
 
-
         //// CALCULATIONS
-        static float getNewCastingTime(float originalTime, Actor * actor, Spell * spell) {
-            return 1.f;
+        static inline Consts::SpellLevel getSpellLevel(Spell * spell) {
+
+            auto perkFID = spell->data.castingPerk->GetFormID();
+            if ( Consts::PERKS_FOR_SPELLS.contains(perkFID) ) {
+                return Consts::PERKS_FOR_SPELLS.at(perkFID);
+            }
+            return Consts::SpellLevel::kUndefined;
+            
+        }
+
+
+        static float getNewCastingTime([[maybe_unused]] float originalTime, Actor * actor, Spell * spell) {
+            
+            Consts::SpellLevel level = getSpellLevel(spell);            
+            if ( level == Consts::SpellLevel::kUndefined ) { return originalTime; }
+            
+            auto spellSchool = spell->GetAssociatedSkill();
+            
+            
+            u32 skill = std::min(
+                Settings::SETTINGS.uMaxSkillLevel,
+                static_cast<u32>( actor->AsActorValueOwner()->GetActorValue(spellSchool) )
+            );
+
+            auto coeffL = Settings::SETTINGS.sSpeed.dCoefficientL;
+
+            // save 2 attaseconds
+            if (coeffL == 0.f) {
+                return Settings::SETTINGS.sSpeed.SPEED_BASE_VALUES[skill];
+            }
+
+            return
+                Settings::SETTINGS.sSpeed.SPEED_BASE_VALUES[skill]
+                /
+                (1 + static_cast<u32> ( level ) * Settings::SETTINGS.sSpeed.dCoefficientL )
+            ;
         }
     
 };

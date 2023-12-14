@@ -2,11 +2,10 @@
 
 #include "../PCH.h"
 
-#define UPPER_EFFECT_LIM 5
 
 
-class Conditions {
-    public:
+
+namespace Conditions {
 
         enum CastFailStatus {
             kSuccess,
@@ -50,8 +49,6 @@ class Conditions {
                     : maxMagn
             ;
         }
-
-    private:
 
         static CastFailStatus isFailBackfire(Actor * actor, Spell * spell) {
 

@@ -3,109 +3,107 @@
 #include "../PCH.h"
 
 
-
+#define UPPER_EFFECT_LIM 5  // should only have this many spell levels in game
 
 
 
 
 namespace Consts {
 
-    using u32 = uint32_t;
 
-    enum SpellLevel {
-        
-        kNovice,
+        enum SpellLevel {
+            
+            kNovice,
 
-        kApprent,
-        kAdept,
-        kExprt,
-        kMastr,
+            kApprent,
+            kAdept,
+            kExprt,
+            kMastr,
 
-        kUndefined
-    };
-    static_assert(static_cast<u32> ( SpellLevel::kUndefined ) == 5);
-
-
-    static HashMap<const char *, SpellLevel> PERKS_FOR_SPELLS {
-
-        // ===== NOVICE
-
-        {"AlterationNovice00", SpellLevel::kNovice },
-        {"ConjurationNovice00", SpellLevel::kNovice },
-        {"DestructionNovice00", SpellLevel::kNovice },
-        {"IllusionNovice00", SpellLevel::kNovice },
-        {"RestorationNovice00", SpellLevel::kNovice },
+            kUndefined
+        };
+        static_assert(static_cast<u32> ( SpellLevel::kUndefined ) == UPPER_EFFECT_LIM );
 
 
-        // ===== ALL OTHERS
-        {"AlterationApprentice25", SpellLevel::kApprent },
-        {"AlterationAdept50", SpellLevel::kAdept },
-        {"AlterationExpert75", SpellLevel::kExprt },
-        {"AlterationMaster100", SpellLevel::kMastr },
+        static inline HashMap<FID, SpellLevel> PERKS_FOR_SPELLS {
 
-        {"ConjurationApprentice25", SpellLevel::kApprent },
-        {"ConjurationAdept50", SpellLevel::kAdept },
-        {"ConjurationExpert75", SpellLevel::kExprt },
-        {"ConjurationMaster100", SpellLevel::kMastr },
+            /*
+                I originally just wanted to use EDID (instead of hardcoded FormIDs)
+                from Skyrim.esm, but then discovered
+                that some very popular mods (such as Ordinator, and - if my guess is right - Adamant as well)
+                will CHANGE the EDIDs of vanilla records they overwrite
+            
 
-        {"DestructionApprentice25", SpellLevel::kApprent },
-        {"DestructionAdept50", SpellLevel::kAdept },
-        {"DestructionExpert75", SpellLevel::kExprt },
-        {"DestructionMaster100", SpellLevel::kMastr },
+                This means FormIDs will *HAVE* to be used
 
-        {"IllusionApprentice25", SpellLevel:: kApprent },
-        {"IllusionAdept50", SpellLevel::kAdept },
-        {"IllusionExpert75", SpellLevel::kExprt },
-        {"IllusionMaster100", SpellLevel::kMastr },
+                Here's hoping Bethesda never RENUBMERS any of the FormIDs, or we're all screwed        
+            */
 
-        {"RestorationApprentice25", SpellLevel:: kApprent},
-        {"RestorationAdept50", SpellLevel::kAdept },
-        {"RestorationExpert75", SpellLevel::kExprt },
-        {"RestorationMaster100", SpellLevel::kMastr }
-    };
+            //// ===== NOVICE
+
+            { 0x000F2CAA, SpellLevel::kNovice },
+            { 0x000F2CA9, SpellLevel::kNovice },
+            { 0x000F2CA8, SpellLevel::kNovice },
+            { 0x000F2CA7, SpellLevel::kNovice },
+            { 0x000F2CA6, SpellLevel::kNovice },
 
 
-    // ==== Key Const Values
-    static const char * FILE_NAME = "ConfigurableMagicCasting.esp";
+            //// ===== ALL OTHERS
+
+            // ALTER
+            { 0x000C44B7, SpellLevel::kApprent },
+            { 0x000C44B8, SpellLevel::kAdept },
+            { 0x000C44B9, SpellLevel::kExprt },
+            { 0x000C44BA, SpellLevel::kMastr },
+
+            // CONJU
+            { 0x000C44BB, SpellLevel::kApprent },
+            { 0x000C44BC, SpellLevel::kAdept },
+            { 0x000C44BD, SpellLevel::kExprt },
+            { 0x000C44BE, SpellLevel::kMastr },
+
+            // DESTR
+            { 0x000C44BF, SpellLevel::kApprent },
+            { 0x000C44C0, SpellLevel::kAdept },
+            { 0x000C44C1, SpellLevel::kExprt },
+            { 0x000C44C2, SpellLevel::kMastr },
+            
+            // ILLUS
+            { 0x000C44C3, SpellLevel::kApprent },
+            { 0x000C44C4, SpellLevel::kAdept },
+            { 0x000C44C5, SpellLevel::kExprt },
+            { 0x000C44C6, SpellLevel::kMastr },
+
+            // RESTO
+            { 0x000C44C7, SpellLevel::kApprent },
+            { 0x000C44C8, SpellLevel::kAdept },
+            { 0x000C44C9, SpellLevel::kExprt },
+            { 0x000C44CA, SpellLevel::kMastr }
+        };
 
 
-    //// =============== FIDs
-    static const FID KYWD_ITEM_AFFECTED_SPELL_H = 0x800;
-    static const FID KYWD_NPC_EXCLUDED_H = 0x801;
+        // ==== Key Const Values
+        static const char * PLUGIN_FILE_NAME = "ConfigurableMagicCasting.esp";
 
 
-    static const FID SOND_CASTFAIL_H = 0x802;
-    static const FID SPEL_BACKFIRE_H = 0x803;
+        //// =============== FIDs
+        static const FID KYWD_ITEM_AFFECTED_SPELL_H = 0x800;
+        static const FID KYWD_NPC_EXCLUDED_H = 0x801;
 
 
-    //// =============== Loadenda
-    static Sound * SOND_CASTFAIL = nullptr;
-    static Spell * SPEL_BACKFIRE = nullptr;
+        static const FID SOND_CASTFAIL_H = 0x802;
+        static const FID SPEL_BACKFIRE_H = 0x803;
 
 
-    static Keyword * KYWD_ITEM_APPLIED_SPELL = nullptr;
-    static Keyword * KYWD_NPC_EXCLUDED = nullptr;
+        //// =============== Loadenda
+        static Sound * SOND_CASTFAIL = nullptr;
+        static Spell * SPEL_BACKFIRE = nullptr;
 
 
+        static Keyword * KYWD_ITEM_APPLIED_SPELL = nullptr;
+        static Keyword * KYWD_NPC_EXCLUDED = nullptr;
+
+        static const Some<AV> isAcceptableSpellType(Spell * spell);
 
 
-
-    // static std::unordered_set<Spell *> PLAYBLE_SPELLS;
-
-    
-
-
-
-
-    static const SpellLevel isSpellPerked(FID spellPerkFID);
-
-
-
-    /*
-        this should be called
-
-    */
-    static const Some<AV> isAcceptableSpellType(Spell * spell);
-
-
-}
+};

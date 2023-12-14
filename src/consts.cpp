@@ -1,4 +1,4 @@
-#include "PCH.h"
+#include "inclu/consts.h"
 
 
 namespace Consts {
@@ -38,20 +38,8 @@ namespace Consts {
                 return Some(av);
             }
         } else {
-            return std::nullopt;
+            return None;
         }
-    }
-
-
-    static const SpellLevel isSpellPerked(FID spellPerkFID) {
-        auto idx = PERKS_FOR_SPELLS.find( static_cast<u32> (spellPerkFID) );
-
-        if (idx >= PERKS_FOR_SPELLS.end()) {
-            return SpellLevel::kUndefined;
-        }
-
-        return static_cast<SpellLevel>(idx % 4);
-
     }
 
 }
