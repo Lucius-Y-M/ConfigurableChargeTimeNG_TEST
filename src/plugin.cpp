@@ -48,21 +48,16 @@ void OnDataLoadedHandler(SKSEMI::Message * msg) {
         Distributor::distributeKeywordsToTomes();
         logger::info("== Tome-taught spells: keyword distribution complete, if executed.");
         
-
-        //// ===================== PRE-CALCULATE BASE CASTING SPEED VALUES
-
-        //// TODO
-        auto polynomial_opt = Settings::parseInput("TODO");
-        if (!polynomial_opt.has_value()) {
-            logger::warn(">>>>>>>> WARNING: Failed to parse your custom polynomial function for casting speed. The DLL Will revert to the default formula as posted on modpage.");
+        //// ===================== HOOK
+        logger::info("======= Parsing Settings INI...");
+        auto parseRes = Parser::parseINIFile();
+        if (std::get<0>( parseRes ) == false) {
+            logger::warn(">>>>>>>>>>> WARNING: INI parsing failed in part / in full. Settings may not be normal.");
+            logger::debug("Failure issue: {}", std::get<1>( parseRes ));
         } else {
-            logger::info("======== FORMULA PARSED SUCCESSFULLY.");
-            ////TODO:
-
+            logger::info("======= Parsing Settings INI succesful.");
         }
-        
-        ////TODO:
-        // Settings::SPEED_BASE_VALUES = Settings::generateSpeedValsVector(   std::views::iota(0, Settings::MAX_SKILL_LEVEL)   );
+
 
 
         //// ===================== HOOK
