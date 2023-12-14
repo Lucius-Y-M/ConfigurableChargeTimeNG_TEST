@@ -6,6 +6,10 @@
 
 
 
+
+
+
+
 void OnDataLoadedHandler(SKSEMI::Message * msg) {
     if (msg->type == SKSEMI::kDataLoaded) {
 
@@ -14,7 +18,7 @@ void OnDataLoadedHandler(SKSEMI::Message * msg) {
         auto * kywd_npc_exclu = RE::TESDataHandler::GetSingleton()->LookupForm<Keyword>(Consts::KYWD_NPC_EXCLUDED_H, Consts::FILE_NAME);
 
         if (!kywd_item || !kywd_npc_exclu) {
-            logger::info("INIT FAILURE 00; !!! DLL IS NOT LOADED AND WILL NOT WORK");
+            logger::critical("INIT FAILURE 00; !!! DLL IS NOT LOADED AND WILL NOT WORK");
             logger::debug("Checking r1: {}", kywd_item ? "normal" : "not normal");
             logger::debug("Checking r2: {}", kywd_npc_exclu ? "normal" : "not normal");
             return;
@@ -30,7 +34,7 @@ void OnDataLoadedHandler(SKSEMI::Message * msg) {
         auto * spel_backfire = RE::TESDataHandler::GetSingleton()->LookupForm<Spell>(Consts::SPEL_BACKFIRE_H, Consts::FILE_NAME);
 
         if (!sond_castfail || !spel_backfire) {
-            logger::info("INIT FAILURE 01; !!! DLL IS NOT LOADED AND WILL NOT WORK");
+            logger::critical("INIT FAILURE 01; !!! DLL IS NOT LOADED AND WILL NOT WORK");
             logger::debug("Checking r1: {}", sond_castfail ? "normal" : "not normal");
             logger::debug("Checking r2: {}", spel_backfire ? "normal" : "not normal");
             return;
@@ -44,6 +48,22 @@ void OnDataLoadedHandler(SKSEMI::Message * msg) {
         Distributor::distributeKeywordsToTomes();
         logger::info("== Tome-taught spells: keyword distribution complete, if executed.");
         
+
+        //// ===================== PRE-CALCULATE BASE CASTING SPEED VALUES
+
+        //// TODO
+        auto polynomial_opt = Settings::parseInput("TODO");
+        if (!polynomial_opt.has_value()) {
+            logger::warn(">>>>>>>> WARNING: Failed to parse your custom polynomial function for casting speed. The DLL Will revert to the default formula as posted on modpage.");
+        } else {
+            logger::info("======== FORMULA PARSED SUCCESSFULLY.");
+            ////TODO:
+
+        }
+        
+        ////TODO:
+        // Settings::SPEED_BASE_VALUES = Settings::generateSpeedValsVector(   std::views::iota(0, Settings::MAX_SKILL_LEVEL)   );
+
 
         //// ===================== HOOK
         logger::info("== RE::ActorMagicCaster::Update Hook == installing...");

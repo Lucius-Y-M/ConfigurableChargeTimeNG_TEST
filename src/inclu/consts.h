@@ -12,43 +12,61 @@ namespace Consts {
 
     using u32 = uint32_t;
 
-
-    // ==== Key Const Values
-    static const char * FILE_NAME = "ConfigurableMagicCasting.esp";
-
-    static const HashSet<u32> PERKS_FOR_SPELLS {
-
-        /*
-            order: appren -> ... -> master
-            
-
-            This is how the FIDs will be checked against:
-
-                idx % 4.
-
-            in other words, idx == 3 -> 3 $ 4 = 3, corresp: kMaster (3).
-
-            
-        */
-
-        //// ALTER:
-        0x810,
-
-        //// ILLUS:
-        0x810,
+    enum SpellLevel {
         
-        //// CONJU:
-        0x810,
+        kNovice,
 
-        //// DESTR:
-        0x810,
+        kApprent,
+        kAdept,
+        kExprt,
+        kMastr,
 
-        //// RESTO:
-        0x810,
+        kUndefined
+    };
+    static_assert(static_cast<u32> ( SpellLevel::kUndefined ) == 5);
 
+
+    static HashMap<const char *, SpellLevel> PERKS_FOR_SPELLS {
+
+        // ===== NOVICE
+
+        {"AlterationNovice00", SpellLevel::kNovice },
+        {"ConjurationNovice00", SpellLevel::kNovice },
+        {"DestructionNovice00", SpellLevel::kNovice },
+        {"IllusionNovice00", SpellLevel::kNovice },
+        {"RestorationNovice00", SpellLevel::kNovice },
+
+
+        // ===== ALL OTHERS
+        {"AlterationApprentice25", SpellLevel::kApprent },
+        {"AlterationAdept50", SpellLevel::kAdept },
+        {"AlterationExpert75", SpellLevel::kExprt },
+        {"AlterationMaster100", SpellLevel::kMastr },
+
+        {"ConjurationApprentice25", SpellLevel::kApprent },
+        {"ConjurationAdept50", SpellLevel::kAdept },
+        {"ConjurationExpert75", SpellLevel::kExprt },
+        {"ConjurationMaster100", SpellLevel::kMastr },
+
+        {"DestructionApprentice25", SpellLevel::kApprent },
+        {"DestructionAdept50", SpellLevel::kAdept },
+        {"DestructionExpert75", SpellLevel::kExprt },
+        {"DestructionMaster100", SpellLevel::kMastr },
+
+        {"IllusionApprentice25", SpellLevel:: kApprent },
+        {"IllusionAdept50", SpellLevel::kAdept },
+        {"IllusionExpert75", SpellLevel::kExprt },
+        {"IllusionMaster100", SpellLevel::kMastr },
+
+        {"RestorationApprentice25", SpellLevel:: kApprent},
+        {"RestorationAdept50", SpellLevel::kAdept },
+        {"RestorationExpert75", SpellLevel::kExprt },
+        {"RestorationMaster100", SpellLevel::kMastr }
     };
 
 
+    // ==== Key Const Values
+    static const char * FILE_NAME = "ConfigurableMagicCasting.esp";
 
 
     //// =============== FIDs
@@ -62,7 +80,7 @@ namespace Consts {
 
     //// =============== Loadenda
     static Sound * SOND_CASTFAIL = nullptr;
-    static RE::SpellItem * SPEL_BACKFIRE = nullptr;
+    static Spell * SPEL_BACKFIRE = nullptr;
 
 
     static Keyword * KYWD_ITEM_APPLIED_SPELL = nullptr;
@@ -77,16 +95,7 @@ namespace Consts {
     
 
 
-    enum SpellLevel {
-        
-        kApprent,
-        kAdept,
-        kExprt,
-        kMastr,
 
-        kNoviceOrUndefined
-    };
-    static_assert(sizeof(SpellLevel) == 5 * sizeof(u32));
 
     static const SpellLevel isSpellPerked(FID spellPerkFID);
 
@@ -96,8 +105,7 @@ namespace Consts {
         this should be called
 
     */
-    static const Some<RE::ActorValue> isAcceptableSpellType(RE::SpellItem * spell);
-
+    static const Some<AV> isAcceptableSpellType(Spell * spell);
 
 
 }

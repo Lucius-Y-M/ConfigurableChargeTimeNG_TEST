@@ -3,15 +3,13 @@
 #include "../include/RE/Skyrim.h"
 #include "../include/SKSE/SKSE.h"
 
-#include "inclu/settings.h"
-#include "inclu/consts.h"
-#include "inclu/hook.h"
-#include "inclu/failcheck.h"
-#include "inclu/distribute.h"
 
 
 #include <unordered_set>
 #include <vector>
+
+
+
 
 // ==== Alias
 
@@ -32,6 +30,9 @@ template<typename T>
 using Vec = std::vector<T>;
 template<typename T, typename U>
 using HashMap = std::unordered_map<T, U>;
+template<typename T, typename U, typename H>
+using HashMapHash = std::unordered_map<T, U, H>;
+
 
 
 
@@ -53,5 +54,19 @@ using FID = RE::FormID;
 using ST = RE::MagicSystem::SpellType;
 using AV = RE::ActorValue;
 
+template <typename T, typename U>
+using tup = std::tuple<T, U>;
+
 namespace logger = SKSE::log;
 using namespace std::literals;
+
+
+
+
+
+#include "inclu/settings.h"
+#include "inclu/consts.h"
+#include "inclu/hook.h"
+#include "inclu/failcheck.h"
+#include "inclu/distribute.h"
+#include "inclu/ini.h"

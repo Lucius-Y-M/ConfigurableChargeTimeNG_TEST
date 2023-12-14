@@ -7,7 +7,7 @@ namespace Consts {
 
     /* this should ONLY be called if NOT restricted to tome-taught spells */
     // static Some<RE::ActorValue> isPlayableSpell(Spell * spell) {
-    static const Some<RE::ActorValue> isAcceptableSpellType(RE::SpellItem * spell) {
+    static const Some<AV> isAcceptableSpellType(Spell * spell) {
 
         auto type = spell->GetSpellType();
 
@@ -34,7 +34,7 @@ namespace Consts {
                 kIllusion = 21,
                 kRestoration = 22,
             */
-            if (18 <- avID && avID <= 22) {
+            if (18 <= avID && avID <= 22) {
                 return Some(av);
             }
         } else {
@@ -47,7 +47,7 @@ namespace Consts {
         auto idx = PERKS_FOR_SPELLS.find( static_cast<u32> (spellPerkFID) );
 
         if (idx >= PERKS_FOR_SPELLS.end()) {
-            return SpellLevel::kNoviceOrUndefined;
+            return SpellLevel::kUndefined;
         }
 
         return static_cast<SpellLevel>(idx % 4);

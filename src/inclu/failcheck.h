@@ -45,8 +45,8 @@ class Conditions {
                 }
             }
 
-            return (maxMagn < Settings::SETTINGS.sFailureAndBackfire.fBackfireDefaultMinDamage) ? Settings::SETTINGS.sFailureAndBackfire.fBackfireDefaultMinDamage
-                    : (maxMagn > Settings::SETTINGS.sFailureAndBackfire.fBackfireDefaultMaxDamage) ? Settings::SETTINGS.sFailureAndBackfire.fBackfireDefaultMaxDamage
+            return (maxMagn < Settings::SETTINGS.sBackfire.fBackfireDefaultMinDamage) ? Settings::SETTINGS.sBackfire.fBackfireDefaultMinDamage
+                    : (maxMagn > Settings::SETTINGS.sBackfire.fBackfireDefaultMaxDamage) ? Settings::SETTINGS.sBackfire.fBackfireDefaultMaxDamage
                     : maxMagn
             ;
         }

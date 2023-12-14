@@ -68,6 +68,15 @@ find_package(CommonLibSSE CONFIG REQUIRED)
 
 
 
+###
+# INIPP
+#
+###
+
+add_subdirectory("inipp")
+# target_link_libraries(${PROJECT_NAME} PUBLIC inipp)
+
+
 
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${headers} ${sources}) # <--- specifies plugin.cpp
 # target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23) # <--- use C++23 standard
