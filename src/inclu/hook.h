@@ -19,7 +19,7 @@ class CastSpeedHook {
 
             //// CHECKS: caster is actor, spell exists, is playable, all keywords fit
             auto * actor = caster->GetCasterAsActor();
-            if (!actor || caster->currentSpell) { return _Update(caster, time); }
+            if (!actor | !caster->currentSpell) { return _Update(caster, time); }
             
             if (auto * spell = caster->currentSpell->As<Spell>();
                 spell
@@ -79,8 +79,7 @@ class CastSpeedHook {
                 auto state = caster->state.underlying();
                                 
                 if (state == static_cast<u32>(MaCa::State::kUnk01) /* start */
-                    || state == static_cast<u32>(MaCa::State::kUnk02) /* charge */
-                    || state == static_cast<u32>(MaCa::State::kCasting) /* casting */
+                    | state == static_cast<u32>(MaCa::State::kUnk02) /* charge */
                 ) {
                     
                     float tOrig = spell->GetChargeTime();
@@ -88,12 +87,27 @@ class CastSpeedHook {
 
                     
                     //// TODO: MUST CHECK AGAIM
-                    tNew = (tNew > 0.00001f) ? tOrig / tNew : 1000000.0f; 
+                    // tNew = (tNew > 0.00001f) ? tOrig / tNew
+                    //         : tOrig; 
+
+
+                    /*
+                        Original code has (tNew > 0.00001f)
+                        However, one problem with this is, if 0 < tNew < 1,
+                        then
+                            (tOrig / tNew) > tOrig
+                        which would be absurd...?
+
+                        That may be more than what this mod should do (EXTENDING casting time if caster skill level too low),
+                        so in that case, just revert to original time.
+                    */
+                    tNew = (tNew > 1.0f) ? tOrig / tNew
+                            : tOrig;
 
 	    			return _Update(caster, tNew);
 
                 } else if (state == static_cast<u32>(MaCa::State::kCasting)) {
-
+                    //// TODO:
                 }
 
             }
@@ -112,17 +126,17 @@ class CastSpeedHook {
         static inline Consts::SpellLevel getSpellLevel(Spell * spell) {
 
             auto perkFID = spell->data.castingPerk->GetFormID();
-            if ( Consts::PERKS_FOR_SPELLS.contains(perkFID) ) {
-                return Consts::PERKS_FOR_SPELLS.at(perkFID);
-            }
-            return Consts::SpellLevel::kUndefined;
+            auto found = Consts::PERKS_FOR_SPELLS.find(perkFID);
+
+            return (found != Consts::PERKS_FOR_SPELLS.end()) ? found->second
+                    : Consts::SpellLevel::kUndefined;
             
         }
 
 
         static float getNewCastingTime([[maybe_unused]] float originalTime, Actor * actor, Spell * spell) {
             
-            Consts::SpellLevel level = getSpellLevel(spell);            
+            Consts::SpellLevel level = getSpellLevel(spell);
             if ( level == Consts::SpellLevel::kUndefined ) { return originalTime; }
             
             auto spellSchool = spell->GetAssociatedSkill();
@@ -135,7 +149,7 @@ class CastSpeedHook {
 
             auto coeffL = Settings::SETTINGS.sSpeed.dCoefficientL;
 
-            // save 2 attaseconds
+            // save 2 attaseconds: coeff of L = 0 (spell level NO importa, entonces no viene al caso)
             if (coeffL == 0.f) {
                 return Settings::SETTINGS.sSpeed.SPEED_BASE_VALUES[skill];
             }
@@ -143,7 +157,7 @@ class CastSpeedHook {
             return
                 Settings::SETTINGS.sSpeed.SPEED_BASE_VALUES[skill]
                 /
-                (1 + static_cast<u32> ( level ) * Settings::SETTINGS.sSpeed.dCoefficientL )
+                (1 + static_cast<u32> ( level ) * coeffL )
             ;
         }
     
